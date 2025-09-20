@@ -807,14 +807,17 @@
     </style>
 </head>
 <body>
-    <!-- Music Player -->
+       <!-- Music Player -->
     <div class="music-player">
         <button class="music-control" id="playPause">
             <i class="fas fa-play"></i>
         </button>
-        <div class="music-info">Celebration - Kool & The Gang</div>
+        <div class="music-info">Trap Beckham - Birthday Bitch</div>
+        <audio id="birthdayAudio" preload="auto">
+            <source src="https://open.spotify.com/track/4ZFtNZuzzdHjYKARA8TEh2?si=hcfmAkX1RK29OaHjDkerZQ" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
     </div>
-    
     <header>
         <div class="container header-content">
             <div class="logo">Rainah's Birthday</div>
@@ -1078,25 +1081,49 @@
 
     <script>
         // Background Music
-        const audio = new Audio('https://cdn.pixabay.com/download/audio/2021/10/25/audio_172d7dec90.mp3?filename=happy-birthday-children-version-50-seconds-6272.mp3');
-        audio.loop = true;
-        const playPauseBtn = document.getElementById('playPause');
-        const musicInfo = document.querySelector('.music-info');
+    const audio = document.getElementById('birthdayAudio');
+    const playPauseBtn = document.getElementById('playPause');
+    const musicInfo = document.querySelector('.music-info');
+    
+    let isPlaying = false;
+    
+    // Function to handle audio play with better error handling
+    function playAudio() {
+        const playPromise = audio.play();
         
-        let isPlaying = false;
-        
-        playPauseBtn.addEventListener('click', function() {
-            if (isPlaying) {
-                audio.pause();
-                playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
-            } else {
-                audio.play().catch(e => {
-                    console.log("Audio play failed: ", e);
+        if (playPromise !== undefined) {
+            playPromise
+                .then(() => {
+                    isPlaying = true;
+                    playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                })
+                .catch(error => {
+                    console.log("Audio play failed: ", error);
+                    // Show a message to the user that interaction is needed
+                    musicInfo.textContent = "Click play to start music";
+                    playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+                    isPlaying = false;
                 });
-                playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
-            }
-            isPlaying = !isPlaying;
-        });
+        }
+    }
+    
+    playPauseBtn.addEventListener('click', function() {
+        if (isPlaying) {
+            audio.pause();
+            playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+            isPlaying = false;
+        } else {
+            playAudio();
+        }
+    });
+    
+    // Auto-play when user interacts with the page (required by many browsers)
+    document.addEventListener('click', function() {
+        if (!isPlaying && audio.paused) {
+            // Try to play only if we haven't already tried
+            playAudio();
+        }
+    }, { once: true });
         
         // Countdown Timer
         function updateCountdown() {
