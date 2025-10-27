@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Danmark Sande - Portfolio</title>
     <meta name="description" content="Portfolio of Danmark Sande - Bridging healthcare and technology">
+    
+    <!-- SEO Meta Tags -->
+    <meta property="og:title" content="Danmark Sande - Healthcare & Technology Portfolio">
+    <meta property="og:description" content="Bridging healthcare and technology to create innovative solutions. Medical professional and software engineer.">
+    <meta property="og:image" content="https://yourdomain.com/potrait.jpg">
+    <meta property="og:url" content="https://yourdomain.com">
+    <meta name="twitter:card" content="summary_large_image">
+    
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Pinterest-style Favicon with R -->
@@ -76,6 +84,50 @@
             color: var(--text-primary);
             line-height: 1.6;
             transition: background-color var(--transition-normal), color var(--transition-normal);
+        }
+
+        /* ===== SCROLL PROGRESS BAR ===== */
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 3px;
+            background: var(--gradient);
+            z-index: 1001;
+            transition: width 0.1s ease;
+        }
+
+        /* ===== BACK TO TOP BUTTON ===== */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--gradient);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all var(--transition-normal);
+            z-index: 1000;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .back-to-top:hover {
+            transform: translateY(-5px);
         }
 
         /* ===== LOADING SCREEN ===== */
@@ -245,6 +297,14 @@
             display: flex;
             align-items: center;
             padding: var(--spacing-xs) 0;
+        }
+
+        nav a.active {
+            color: var(--primary);
+        }
+
+        nav a.active:after {
+            width: 100%;
         }
 
         nav a i {
@@ -567,6 +627,53 @@
             color: var(--text-secondary);
         }
 
+        /* ===== ACHIEVEMENTS SECTION ===== */
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--spacing-lg);
+            margin-top: var(--spacing-lg);
+        }
+
+        .achievement-card {
+            background: var(--bg-primary);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-md);
+            text-align: center;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            transition: transform var(--transition-normal);
+        }
+
+        .achievement-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .achievement-card i {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .achievement-card h3 {
+            color: var(--primary);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .achievement-card p {
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .achievement-date {
+            background: var(--gradient);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
         /* ===== PROJECTS SECTION ===== */
         .project-filters {
             display: flex;
@@ -732,6 +839,16 @@
         .form-group {
             margin-bottom: var(--spacing-md);
             position: relative;
+        }
+
+        .form-group.success input,
+        .form-group.success textarea,
+        .form-group.success select {
+            border-color: #27ae60;
+        }
+
+        .form-group.success .error-message {
+            color: #27ae60;
         }
 
         .form-group label {
@@ -933,6 +1050,10 @@
             .section-title h2 {
                 font-size: 2.2rem;
             }
+
+            .achievements-grid {
+                grid-template-columns: 1fr;
+            }
         }
         
         @media (max-width: 480px) {
@@ -960,10 +1081,25 @@
             .contact-info, #contactForm {
                 padding: var(--spacing-md);
             }
+
+            .back-to-top {
+                bottom: 20px;
+                right: 20px;
+                width: 45px;
+                height: 45px;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Scroll Progress Bar -->
+    <div class="scroll-progress" id="scrollProgress"></div>
+
+    <!-- Back to Top Button -->
+    <button class="back-to-top" id="backToTop" aria-label="Back to top">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
     <!-- Loading Screen -->
     <div class="loading-screen" id="loadingScreen">
         <div class="loading-spinner"></div>
@@ -984,6 +1120,7 @@
                     <li><a href="#hero">Home</a></li>
                     <li><a href="#about">About</a></li>
                     <li><a href="#projects">Projects</a></li>
+                    <li><a href="#achievements">Achievements</a></li>
                     <li><a href="#skills">Skills</a></li>
                     <li><a href="#contact">Contact</a></li>
                 </ul>
@@ -1012,16 +1149,16 @@
                         </div>
                         
                         <div class="social-sharing">
-                            <a href="https://www.instagram.com/snmetit?igsh=MXAycWxjemk5ZGY3Zg==" class="social-btn instagram" title="Instagram" aria-label="Visit my Instagram">
+                            <a href="https://www.instagram.com/snmetit?igsh=MXAycWxjemk5ZGY3Zg==" class="social-btn instagram" title="Instagram" aria-label="Visit my Instagram" target="_blank" rel="noopener">
                                 <i class="fab fa-instagram"></i>
                             </a>
-                            <a href="https://github.com/IMBUGA" class="social-btn github" title="GitHub" aria-label="Visit my GitHub">
+                            <a href="https://github.com/IMBUGA" class="social-btn github" title="GitHub" aria-label="Visit my GitHub" target="_blank" rel="noopener">
                                 <i class="fab fa-github"></i>
                             </a>
-                            <a href="https://wa.me/254797971425" class="social-btn whatsapp" title="WhatsApp" aria-label="Contact me on WhatsApp">
+                            <a href="https://wa.me/254797971425" class="social-btn whatsapp" title="WhatsApp" aria-label="Contact me on WhatsApp" target="_blank" rel="noopener">
                                 <i class="fab fa-whatsapp"></i>
                             </a>
-                            <a href="https://www.linkedin.com/in/danmark-sande-605048325" class="social-btn linkedin" title="LinkedIn" aria-label="Visit my LinkedIn">
+                            <a href="https://www.linkedin.com/in/danmark-sande-605048325" class="social-btn linkedin" title="LinkedIn" aria-label="Visit my LinkedIn" target="_blank" rel="noopener">
                                 <i class="fab fa-linkedin"></i>
                             </a>
                         </div>
@@ -1043,16 +1180,16 @@
                 </div>
                 <div class="about-content">
                     <div class="about-text">
-                        <p>I'm a unique professional with expertise in both healthcare and software engineering. My journey began in medical studies, where I developed a passion for helping others and understanding the human body. Along the way, I discovered the power of technology to transform healthcare delivery.</p>
-                        <p>Now, I'm combining these two disciplines to create innovative solutions that bridge the gap between medicine and technology. I believe that the future of healthcare lies at the intersection of these fields, and I'm excited to be part of that evolution.</p>
+                        <p>I’m Danmark — a professional driven by a rare blend of healthcare and software engineering expertise. My journey began in nursing, where I learned the value of empathy, precision, and care in improving people’s lives. Along the way, I discovered how technology can redefine healthcare systems and enhance patient outcomes.</p>
+                        <p>Currently, I’m focused on bridging these two worlds — medicine and technology — to build solutions that make healthcare smarter, more accessible, and more human. I believe the future of care lies in this intersection, and I’m committed to being part of the innovation shaping that future.</p>  
                         
                         <div class="skills-container">
                             <div class="skill-category">
                                 <h3><i class="fas fa-stethoscope"></i> Medical Skills</h3>
                                 <div class="skill-item">
                                     <div class="skill-name">
-                                        <span>Patient Care</span>
-                                        <span>90%</span>
+                                        <span><i class="fas fa-user-md"></i> Patient Care</span>
+                                        
                                     </div>
                                     <div class="skill-bar">
                                         <div class="skill-level" style="width: 90%;"></div>
@@ -1060,8 +1197,8 @@
                                 </div>
                                 <div class="skill-item">
                                     <div class="skill-name">
-                                        <span>Medical Knowledge</span>
-                                        <span>85%</span>
+                                        <span><i class="fas fa-book-medical"></i> Medical Knowledge</span>
+                                        
                                     </div>
                                     <div class="skill-bar">
                                         <div class="skill-level" style="width: 85%;"></div>
@@ -1069,8 +1206,8 @@
                                 </div>
                                 <div class="skill-item">
                                     <div class="skill-name">
-                                        <span>Clinical Procedures</span>
-                                        <span>80%</span>
+                                        <span><i class="fas fa-procedures"></i> Clinical Procedures</span>
+                                       
                                     </div>
                                     <div class="skill-bar">
                                         <div class="skill-level" style="width: 80%;"></div>
@@ -1082,8 +1219,8 @@
                                 <h3><i class="fas fa-laptop-code"></i> Technical Skills</h3>
                                 <div class="skill-item">
                                     <div class="skill-name">
-                                        <span>Web Development</span>
-                                        <span>85%</span>
+                                        <span><i class="fab fa-html5"></i> Web Development</span>
+                                        
                                     </div>
                                     <div class="skill-bar">
                                         <div class="skill-level" style="width: 85%;"></div>
@@ -1091,8 +1228,8 @@
                                 </div>
                                 <div class="skill-item">
                                     <div class="skill-name">
-                                        <span>Python</span>
-                                        <span>80%</span>
+                                        <span><i class="fab fa-python"></i> Python</span>
+                                        
                                     </div>
                                     <div class="skill-bar">
                                         <div class="skill-level" style="width: 80%;"></div>
@@ -1100,8 +1237,8 @@
                                 </div>
                                 <div class="skill-item">
                                     <div class="skill-name">
-                                        <span>Database Management</span>
-                                        <span>75%</span>
+                                        <span><i class="fas fa-database"></i> Database Management</span>
+                                        
                                     </div>
                                     <div class="skill-bar">
                                         <div class="skill-level" style="width: 75%;"></div>
@@ -1111,38 +1248,41 @@
                         </div>
                     </div>
                     <div class="timeline">
-                        <div class="timeline-item">
-                            <h3>2018</h3>
-                            <p>Graduated high school with honors</p>
-                        </div>
-                        <div class="timeline-item">
-                            <h3>2019</h3>
-                            <p>Began medical studies at university</p>
-                        </div>
-                        <div class="timeline-item">
-                            <h3>2021</h3>
-                            <p>Discovered passion for software engineering</p>
-                        </div>
-                        <div class="timeline-item">
-                            <h3>2022</h3>
-                            <p>Started dual focus on medical and software studies</p>
-                        </div>
-                        <div class="timeline-item">
-                            <h3>2024</h3>
-                            <p>Continuing to bridge medical and technology fields</p>
-                        </div>
-                        <div class="timeline-item">
-                            <h3>2025</h3>
-                            <p>Graduated in medical school, and focussed on advancing software skills</p>
-                        </div>
-                        <div class="timeline-item">
-                            <h3>Present</h3>
-                            <p>Actively seeking opportunities in healthcare technology</p>
-                        </div>
-                        <div class="timeline-item">
-                            <h3>Future</h3>
-                            <p>Aspiring to innovate at the intersection of healthcare and technology</p>
-                        </div>
+                    <div class="timeline-item">
+                        <h3>2014</h3>
+                        <p>Completed KCPE, marking the start of my academic journey.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h3>2018</h3>
+                        <p>Graduated high school with honors from Vihiga Boys.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h3>2019</h3>
+                        <p>Joined Kenya Methodist University (KEMU) to pursue a Bachelor of Science in Nursing.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h3>2024</h3>
+                        <p>Completed my nursing degree and began exploring the world of software engineering.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h3>February 2025</h3>
+                        <p>Started formal studies in Software Development, expanding my expertise beyond healthcare.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h3>October 2025</h3>
+                        <p>Completed software development training, solidifying my dual foundation in healthcare and technology.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h3>November 2025</h3>
+                        <p>Graduated with a Bachelor of Science in Nursing — officially bridging my passion for care and innovation.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h3>Present</h3>
+                        <p>Actively building projects and exploring opportunities that merge healthcare and technology.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h3>Future</h3>
+                        <p>Aspiring to pioneer transformative solutions at the intersection of medicine and technology.</p>
                     </div>
                 </div>
             </div>
@@ -1153,87 +1293,181 @@
                 <div class="section-title">
                     <h2>My Projects</h2>
                 </div>
+
                 <div class="project-filters">
                     <button class="filter-btn active" data-filter="all">All</button>
                     <button class="filter-btn" data-filter="healthcare">Healthcare</button>
                     <button class="filter-btn" data-filter="web">Web Development</button>
                     <button class="filter-btn" data-filter="data">Data Analysis</button>
                 </div>
+
                 <div class="projects-grid">
+                    <!-- Healthcare Management System -->
                     <div class="project-card" data-category="healthcare">
                         <div class="project-img">
-                            <img src="https://placehold.co/600x400/B65D30/white?text=Health+App" alt="Healthcare Management System interface">
+                            <img src="https://placehold.co/600x400/B65D30/white?text=Healthcare+System" alt="Healthcare Management System interface">
                         </div>
                         <div class="project-content">
                             <h3>Healthcare Management System</h3>
-                            <p>A comprehensive system for managing patient records, appointments, and medical history with a focus on data security and ease of use.</p>
+                            <p>A comprehensive hospital system for managing patients, staff, and appointments — ensuring secure, efficient, and digital healthcare operations.</p>
                             <div class="project-tags">
                                 <span class="project-tag">React</span>
                                 <span class="project-tag">Node.js</span>
                                 <span class="project-tag">MongoDB</span>
                             </div>
                             <div class="project-links">
-                                <a href="#" class="project-link" aria-label="View source code on GitHub"><i class="fab fa-github"></i> Code</a>
-                                <a href="#" class="project-link" aria-label="View live demo"><i class="fas fa-external-link-alt"></i> Demo</a>
+                                <a href="https://github.com/Danmark-Sande/healthcare-management-system" class="project-link" target="_blank" rel="noopener"><i class="fab fa-github"></i> Code</a>
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="project-card" data-category="data">
-                        <div class="project-img">
-                            <img src="https://placehold.co/600x400/8C4A2F/white?text=MedData+Analysis" alt="Medical Data Analysis Tool interface">
-                        </div>
-                        <div class="project-content">
-                            <h3>Medical Data Analysis Tool</h3>
-                            <p>Python-based application for analyzing medical data sets, identifying patterns, and generating insights for healthcare professionals.</p>
-                            <div class="project-tags">
-                                <span class="project-tag">Python</span>
-                                <span class="project-tag">Pandas</span>
-                                <span class="project-tag">Data Visualization</span>
-                            </div>
-                            <div class="project-links">
-                                <a href="#" class="project-link" aria-label="View source code on GitHub"><i class="fab fa-github"></i> Code</a>
-                                <a href="#" class="project-link" aria-label="View live demo"><i class="fas fa-external-link-alt"></i> Demo</a>
-                            </div>
-                        </div>
-                    </div>
-                    
+
+                    <!-- CareConnect Management System -->
                     <div class="project-card" data-category="healthcare">
                         <div class="project-img">
-                            <img src="https://placehold.co/600x400/D97B4E/white?text=Telemedicine+Platform" alt="Telemedicine Platform interface">
+                            <img src="https://placehold.co/600x400/8C4A2F/white?text=CareConnect+System" alt="CareConnect Management System interface">
                         </div>
                         <div class="project-content">
-                            <h3>Telemedicine Platform</h3>
-                            <p>A secure video consultation platform connecting patients with healthcare providers, featuring prescription management and appointment scheduling.</p>
+                            <h3>CareConnect Management System</h3>
+                            <p>An integrated healthcare platform that connects caregivers, patients, and administrators — improving coordination, efficiency, and care quality.</p>
                             <div class="project-tags">
-                                <span class="project-tag">WebRTC</span>
-                                <span class="project-tag">Firebase</span>
-                                <span class="project-tag">Vue.js</span>
+                                <span class="project-tag">MERN</span>
+                                <span class="project-tag">JWT Auth</span>
+                                <span class="project-tag">REST API</span>
                             </div>
                             <div class="project-links">
-                                <a href="#" class="project-link" aria-label="View source code on GitHub"><i class="fab fa-github"></i> Code</a>
-                                <a href="#" class="project-link" aria-label="View live demo"><i class="fas fa-external-link-alt"></i> Demo</a>
+                                <a href="https://github.com/Danmark-Sande/CareConnect" class="project-link" target="_blank" rel="noopener"><i class="fab fa-github"></i> Code</a>
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="project-card" data-category="web">
+
+                    <!-- Healthcare Reminder System -->
+                    <div class="project-card" data-category="healthcare">
                         <div class="project-img">
-                            <img src="https://placehold.co/600x400/B65D30/white?text=Portfolio+Website" alt="Portfolio Website interface">
+                            <img src="https://placehold.co/600x400/D97B4E/white?text=Reminder+System" alt="Healthcare Reminder System interface">
                         </div>
                         <div class="project-content">
-                            <h3>Personal Portfolio Website</h3>
-                            <p>A responsive portfolio website showcasing my projects and skills, built with modern web technologies and featuring a warm color scheme.</p>
+                            <h3>Healthcare Reminder System</h3>
+                            <p>A web app that automates appointment and medication reminders to improve patient compliance and reduce missed schedules.</p>
                             <div class="project-tags">
-                                <span class="project-tag">HTML/CSS</span>
-                                <span class="project-tag">JavaScript</span>
-                                <span class="project-tag">Responsive Design</span>
+                                <span class="project-tag">Node.js</span>
+                                <span class="project-tag">Express</span>
+                                <span class="project-tag">Twilio API</span>
                             </div>
                             <div class="project-links">
-                                <a href="#" class="project-link" aria-label="View source code on GitHub"><i class="fab fa-github"></i> Code</a>
-                                <a href="#" class="project-link" aria-label="View live demo"><i class="fas fa-external-link-alt"></i> Demo</a>
+                                <a href="https://github.com/Danmark-Sande/healthcare-reminder-system" class="project-link" target="_blank" rel="noopener"><i class="fab fa-github"></i> Code</a>
                             </div>
                         </div>
+                    </div>
+
+                    <!-- Sande Family Website -->
+                    <div class="project-card" data-category="web">
+                        <div class="project-img">
+                            <img src="https://placehold.co/600x400/6B4226/white?text=Sande+Family+Website" alt="Sande Family Website interface">
+                        </div>
+                        <div class="project-content">
+                            <h3>Sande Family Website</h3>
+                            <p>A dynamic family website featuring a gallery, theme toggle, and family member profiles — built with a warm, accessible design.</p>
+                            <div class="project-tags">
+                                <span class="project-tag">HTML</span>
+                                <span class="project-tag">CSS</span>
+                                <span class="project-tag">JavaScript</span>
+                            </div>
+                            <div class="project-links">
+                                <a href="https://github.com/Danmark-Sande/Sande-Family-Website" class="project-link" target="_blank" rel="noopener"><i class="fab fa-github"></i> Code</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MERN Bug Tracker App -->
+                    <div class="project-card" data-category="web">
+                        <div class="project-img">
+                            <img src="https://placehold.co/600x400/5C3323/white?text=Bug+Tracker" alt="MERN Bug Tracker App interface">
+                        </div>
+                        <div class="project-content">
+                            <h3>MERN Bug Tracker App</h3>
+                            <p>A full-stack application for tracking software issues across projects — complete with authentication, dashboards, and role management.</p>
+                            <div class="project-tags">
+                                <span class="project-tag">MERN</span>
+                                <span class="project-tag">JWT</span>
+                                <span class="project-tag">Redux</span>
+                            </div>
+                            <div class="project-links">
+                                <a href="https://github.com/Danmark-Sande/mern-bug-tracker" class="project-link" target="_blank" rel="noopener"><i class="fab fa-github"></i> Code</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- DS Blog -->
+                    <div class="project-card" data-category="web">
+                        <div class="project-img">
+                            <img src="https://placehold.co/600x400/8C4A2F/white?text=DS+Blog" alt="DS Blog interface">
+                        </div>
+                        <div class="project-content">
+                            <h3>DS Blog</h3>
+                            <p>A personal blogging platform for sharing ideas, articles, and insights — designed with a clean UI and Markdown editor integration.</p>
+                            <div class="project-tags">
+                                <span class="project-tag">React</span>
+                                <span class="project-tag">Node.js</span>
+                                <span class="project-tag">MongoDB</span>
+                            </div>
+                            <div class="project-links">
+                                <a href="https://github.com/Danmark-Sande/ds-blog" class="project-link" target="_blank" rel="noopener"><i class="fab fa-github"></i> Code</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Personal Portfolio -->
+                    <div class="project-card" data-category="web">
+                        <div class="project-img">
+                            <img src="https://placehold.co/600x400/B65D30/white?text=Portfolio" alt="Personal Portfolio interface">
+                        </div>
+                        <div class="project-content">
+                            <h3>Personal Portfolio</h3>
+                            <p>A modern, responsive personal website showcasing my professional journey, technical skills, and featured projects.</p>
+                            <div class="project-tags">
+                                <span class="project-tag">HTML</span>
+                                <span class="project-tag">CSS</span>
+                                <span class="project-tag">JavaScript</span>
+                            </div>
+                            <div class="project-links">
+                                <a href="https://github.com/Danmark-Sande/portfolio" class="project-link" target="_blank" rel="noopener"><i class="fab fa-github"></i> Code</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <section id="achievements">
+            <div class="container">
+                <div class="section-title">
+                    <h2>Achievements & Certifications</h2>
+                </div>
+                <div class="achievements-grid">
+                    <div class="achievement-card">
+                        <i class="fas fa-graduation-cap"></i>
+                        <h3>Medical Degree</h3>
+                        <p>Bachelor of Science in Nursing</p>
+                        <span class="achievement-date">2025</span>
+                    </div>
+                    <div class="achievement-card">
+                        <i class="fas fa-certificate"></i>
+                        <h3>Full-Stack Development</h3>
+                        <p>Advanced Web Technologies Certification</p>
+                        <span class="achievement-date">2025</span>
+                    </div>
+                    <div class="achievement-card">
+                        <i class="fas fa-award"></i>
+                        <h3>Healthcare Innovation</h3>
+                        <p>Medical Technology Innovation Award</p>
+                        <span class="achievement-date">Pending</span>
+                    </div>
+                    <div class="achievement-card">
+                        <i class="fas fa-code"></i>
+                        <h3>BLS & ACLS Certification</h3>
+                        <p>Advanced medical skills</p>
+                        <span class="achievement-date">2024</span>
                     </div>
                 </div>
             </div>
@@ -1249,8 +1483,8 @@
                         <h3><i class="fas fa-laptop-code"></i> Technical Skills</h3>
                         <div class="skill-item">
                             <div class="skill-name">
-                                <span>HTML/CSS/JavaScript</span>
-                                <span>90%</span>
+                                <span><i class="fab fa-html5"></i> HTML/CSS/JavaScript</span>
+                                
                             </div>
                             <div class="skill-bar">
                                 <div class="skill-level" style="width: 90%;"></div>
@@ -1258,8 +1492,8 @@
                         </div>
                         <div class="skill-item">
                             <div class="skill-name">
-                                <span>Python</span>
-                                <span>85%</span>
+                                <span><i class="fab fa-python"></i> Python</span>
+                               
                             </div>
                             <div class="skill-bar">
                                 <div class="skill-level" style="width: 85%;"></div>
@@ -1267,8 +1501,8 @@
                         </div>
                         <div class="skill-item">
                             <div class="skill-name">
-                                <span>React.js</span>
-                                <span>80%</span>
+                                <span><i class="fab fa-react"></i> React.js</span>
+                                
                             </div>
                             <div class="skill-bar">
                                 <div class="skill-level" style="width: 80%;"></div>
@@ -1276,8 +1510,8 @@
                         </div>
                         <div class="skill-item">
                             <div class="skill-name">
-                                <span>Database Management</span>
-                                <span>75%</span>
+                                <span><i class="fas fa-database"></i> Database Management</span>
+                               
                             </div>
                             <div class="skill-bar">
                                 <div class="skill-level" style="width: 75%;"></div>
@@ -1289,8 +1523,8 @@
                         <h3><i class="fas fa-stethoscope"></i> Medical Skills</h3>
                         <div class="skill-item">
                             <div class="skill-name">
-                                <span>Patient Assessment</span>
-                                <span>90%</span>
+                                <span><i class="fas fa-user-md"></i> Patient Assessment</span>
+                                
                             </div>
                             <div class="skill-bar">
                                 <div class="skill-level" style="width: 90%;"></div>
@@ -1298,8 +1532,8 @@
                         </div>
                         <div class="skill-item">
                             <div class="skill-name">
-                                <span>Clinical Procedures</span>
-                                <span>85%</span>
+                                <span><i class="fas fa-procedures"></i> Clinical Procedures</span>
+                                
                             </div>
                             <div class="skill-bar">
                                 <div class="skill-level" style="width: 85%;"></div>
@@ -1307,8 +1541,8 @@
                         </div>
                         <div class="skill-item">
                             <div class="skill-name">
-                                <span>Medical Documentation</span>
-                                <span>88%</span>
+                                <span><i class="fas fa-file-medical"></i> Medical Documentation</span>
+                                
                             </div>
                             <div class="skill-bar">
                                 <div class="skill-level" style="width: 88%;"></div>
@@ -1316,8 +1550,8 @@
                         </div>
                         <div class="skill-item">
                             <div class="skill-name">
-                                <span>Emergency Response</span>
-                                <span>82%</span>
+                                <span><i class="fas fa-ambulance"></i> Emergency Response</span>
+                               
                             </div>
                             <div class="skill-bar">
                                 <div class="skill-level" style="width: 82%;"></div>
@@ -1368,16 +1602,16 @@
                         </div>
                         
                         <div class="social-sharing">
-                            <a href="https://www.instagram.com/snmetit?igsh=MXAycWxjemk5ZGY3Zg==" class="social-btn instagram" title="Instagram" aria-label="Visit my Instagram">
+                            <a href="https://www.instagram.com/snmetit?igsh=MXAycWxjemk5ZGY3Zg==" class="social-btn instagram" title="Instagram" aria-label="Visit my Instagram" target="_blank" rel="noopener">
                                 <i class="fab fa-instagram"></i>
                             </a>
-                            <a href="https://github.com/IMBUGA" class="social-btn github" title="GitHub" aria-label="Visit my GitHub">
+                            <a href="https://github.com/IMBUGA" class="social-btn github" title="GitHub" aria-label="Visit my GitHub" target="_blank" rel="noopener">
                                 <i class="fab fa-github"></i>
                             </a>
-                            <a href="https://wa.me/254797971425" class="social-btn whatsapp" title="WhatsApp" aria-label="Contact me on WhatsApp">
+                            <a href="https://wa.me/254797971425" class="social-btn whatsapp" title="WhatsApp" aria-label="Contact me on WhatsApp" target="_blank" rel="noopener">
                                 <i class="fab fa-whatsapp"></i>
                             </a>
-                            <a href="https://www.linkedin.com/in/danmark-sande-605048325" class="social-btn linkedin" title="LinkedIn" aria-label="Visit my LinkedIn">
+                            <a href="https://www.linkedin.com/in/danmark-sande-605048325" class="social-btn linkedin" title="LinkedIn" aria-label="Visit my LinkedIn" target="_blank" rel="noopener">
                                 <i class="fab fa-linkedin"></i>
                             </a>
                         </div>
@@ -1427,19 +1661,79 @@
     </footer>
 
     <script>
-        // ===== LOADING SCREEN =====
-        document.addEventListener('DOMContentLoaded', function() {
-            // Hide loading screen after page loads
-            setTimeout(() => {
-                document.getElementById('loadingScreen').classList.add('hidden');
-            }, 1000);
+        // ===== LOADING SCREEN WITH PROGRESS =====
+        window.addEventListener('load', function() {
+            const loadingScreen = document.getElementById('loadingScreen');
+            const loadingText = document.querySelector('.loading-text');
             
-            // Initialize all features
-            initTypewriter();
-            initProjectFilter();
-            enhanceContactForm();
-            animateSkillBars();
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    loadingText.textContent = 'Ready!';
+                    setTimeout(() => {
+                        loadingScreen.classList.add('hidden');
+                    }, 500);
+                } else {
+                    loadingText.textContent = `Loading Portfolio... ${Math.round(progress)}%`;
+                }
+            }, 200);
         });
+
+        // ===== SCROLL PROGRESS BAR =====
+        const scrollProgress = document.getElementById('scrollProgress');
+        window.addEventListener('scroll', () => {
+            const winHeight = window.innerHeight;
+            const docHeight = document.documentElement.scrollHeight;
+            const scrollTop = window.pageYOffset;
+            const scrollPercent = (scrollTop / (docHeight - winHeight)) * 100;
+            scrollProgress.style.width = scrollPercent + '%';
+        });
+
+        // ===== BACK TO TOP BUTTON =====
+        const backToTop = document.getElementById('backToTop');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTop.classList.add('visible');
+            } else {
+                backToTop.classList.remove('visible');
+            }
+        });
+
+        backToTop.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // ===== ACTIVE NAVIGATION STATE =====
+        function updateActiveNav() {
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('nav a');
+            
+            let current = '';
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 100;
+                const sectionHeight = section.clientHeight;
+                if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
+                    current = section.getAttribute('id');
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        window.addEventListener('scroll', updateActiveNav);
 
         // ===== THEME TOGGLE FUNCTIONALITY =====
         const themeToggle = document.getElementById('themeToggle');
@@ -1591,6 +1885,24 @@
                 });
             }
         }
+
+        // ===== ENHANCED FORM VALIDATION =====
+        function showFieldStatus(field, isValid, message = '') {
+            const parent = field.parentElement;
+            const errorSpan = parent.querySelector('.error-message');
+            
+            parent.classList.remove('error', 'success');
+            
+            if (!isValid && message) {
+                parent.classList.add('error');
+                errorSpan.textContent = message;
+            } else if (isValid && field.value) {
+                parent.classList.add('success');
+                errorSpan.textContent = '✓ Looks good!';
+            } else {
+                errorSpan.textContent = '';
+            }
+        }
         
         // ===== FORM VALIDATION AND SUBMISSION =====
         const contactForm = document.getElementById('contactForm');
@@ -1602,7 +1914,7 @@
             
             // Reset error states
             document.querySelectorAll('.form-group').forEach(group => {
-                group.classList.remove('error');
+                group.classList.remove('error', 'success');
             });
             document.querySelectorAll('.error-message').forEach(error => {
                 error.textContent = '';
@@ -1611,42 +1923,44 @@
             // Name validation
             const name = document.getElementById('name').value.trim();
             if (!name) {
-                document.getElementById('nameError').textContent = 'Name is required';
-                document.getElementById('name').parentElement.classList.add('error');
+                showFieldStatus(document.getElementById('name'), false, 'Name is required');
                 isValid = false;
+            } else {
+                showFieldStatus(document.getElementById('name'), true);
             }
             
             // Email validation
             const email = document.getElementById('email').value.trim();
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!email) {
-                document.getElementById('emailError').textContent = 'Email is required';
-                document.getElementById('email').parentElement.classList.add('error');
+                showFieldStatus(document.getElementById('email'), false, 'Email is required');
                 isValid = false;
             } else if (!emailRegex.test(email)) {
-                document.getElementById('emailError').textContent = 'Please enter a valid email address';
-                document.getElementById('email').parentElement.classList.add('error');
+                showFieldStatus(document.getElementById('email'), false, 'Please enter a valid email address');
                 isValid = false;
+            } else {
+                showFieldStatus(document.getElementById('email'), true);
             }
             
             // Subject validation
             const subject = document.getElementById('subject').value;
             if (!subject) {
-                document.getElementById('subjectError').textContent = 'Please select a subject';
-                document.getElementById('subject').parentElement.classList.add('error');
+                showFieldStatus(document.getElementById('subject'), false, 'Please select a subject');
                 isValid = false;
+            } else {
+                showFieldStatus(document.getElementById('subject'), true);
             }
             
             // Message validation
             const message = document.getElementById('message').value.trim();
             if (!message) {
-                document.getElementById('messageError').textContent = 'Message is required';
-                document.getElementById('message').parentElement.classList.add('error');
+                showFieldStatus(document.getElementById('message'), false, 'Message is required');
                 isValid = false;
             } else if (message.length < 10) {
-                document.getElementById('messageError').textContent = 'Message should be at least 10 characters long';
-                document.getElementById('message').parentElement.classList.add('error');
+                showFieldStatus(document.getElementById('message'), false, 'Message should be at least 10 characters long');
                 isValid = false;
+            } else {
+                showFieldStatus(document.getElementById('message'), true);
             }
             
             return isValid;
@@ -1776,6 +2090,37 @@
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+        });
+
+        // ===== LAZY LOADING FOR IMAGES =====
+        document.addEventListener('DOMContentLoaded', function() {
+            const lazyImages = [].slice.call(document.querySelectorAll('img[data-src]'));
+            
+            if ('IntersectionObserver' in window) {
+                let lazyImageObserver = new IntersectionObserver(function(entries, observer) {
+                    entries.forEach(function(entry) {
+                        if (entry.isIntersecting) {
+                            let lazyImage = entry.target;
+                            lazyImage.src = lazyImage.dataset.src;
+                            lazyImage.classList.remove('lazy');
+                            lazyImageObserver.unobserve(lazyImage);
+                        }
+                    });
+                });
+                
+                lazyImages.forEach(function(lazyImage) {
+                    lazyImageObserver.observe(lazyImage);
+                });
+            }
+        });
+
+        // Initialize all features
+        document.addEventListener('DOMContentLoaded', function() {
+            initTypewriter();
+            initProjectFilter();
+            enhanceContactForm();
+            animateSkillBars();
+            updateActiveNav();
         });
     </script>
 </body>
